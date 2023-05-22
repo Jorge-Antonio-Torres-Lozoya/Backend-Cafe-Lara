@@ -1,0 +1,42 @@
+﻿@page "/cliente/nuevo"
+@using Act17.Shared.Models
+@inject HttpClient http
+@inject NavigationManager navegar
+<h3>ClienteNuevo</h3>
+<EditForm Model="elCliente" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator/>
+  
+        <div class="mb-3">
+            <label for="nombre" class="form-label">Nombre</label>
+           <InputText id="nombre" class="form-control" @bind-Value="elCliente.Nombre"/>
+           <ValidationMessage For="(()=>elCliente.Nombre)"/>
+        </div>
+        <div class="mb-3">
+            <label for="correo" class="form-label">Correo</label>
+            <InputText class="form-control" id="correo" @bind-Value="elCliente.Correo" />
+            <ValidationMessage For="(()=>elCliente.Correo)" />
+        </div>
+        <div class="mb-3">
+            <label for="telefono" class="form-label">Teléfono</label>
+            <InputText class="form-control" id="telefono" @bind-Value="elCliente.Telefono" />
+            <ValidationMessage For="(()=>elCliente.Telefono)" />
+        </div>
+        <button type="submit" class="btn btn-primary mx-2">Guardar</button>
+    <button type="button" class="btn btn-danger" @onclick="Cancelar">Cancelar</button>
+
+</EditForm>
+
+@code {
+    private Cliente elCliente = new Cliente();
+
+    private async void Guardar()
+
+    {
+        await http.PostAsJsonAsync("api/clientes", elCliente);
+        navegar.NavigateTo("/clientes");
+    }
+    private void Cancelar()
+    {
+        navegar.NavigateTo("/clientes");
+    }
+}
