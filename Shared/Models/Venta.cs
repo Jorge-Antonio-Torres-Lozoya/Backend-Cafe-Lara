@@ -25,8 +25,7 @@ namespace Act17.Shared.Models
         public int ClienteId { get; set; }
         public virtual Cliente? Cliente { get; set; }
 
-        [JsonIgnore]
-        public virtual ICollection<Producto>? Productos{ get; set; }
+        public virtual ICollection<Producto>? Productos { get; set; }
         [NotMapped]
         public List<int>? ProductoIds { get; set; }
     }

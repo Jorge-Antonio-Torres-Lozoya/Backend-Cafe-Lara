@@ -20,17 +20,25 @@ else
                     <th>Correo</th>
                     <th>Telefono</th>
                     <th>Acciones</th>
+
                     
                 </tr>
             </thead>
             <tbody>
             @foreach (var cliente in losClientes)
             {
-                        <tr>
+              
+                <tr>
                     <td>@cliente.ClienteId</td>
                             <td>@cliente.Nombre</td>
                             <td>@cliente.Correo</td>
                             <td>@cliente.Telefono</td>
+
+                 @* @foreach (var pedido in cliente.Ventas)
+                    {
+                        <td>@pedido.VentaId  </td>
+                    }*@
+               
                             <td>
                         <button class="btn-danger mx-3" @onclick="(()=>Eliminar(cliente.ClienteId))"><span class="oi oi-trash"></span></button>
                         <button class="btn-secondary" @onclick="(()=>Modificar(cliente.ClienteId))">

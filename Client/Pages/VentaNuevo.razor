@@ -1,0 +1,53 @@
+﻿@page "/venta/nuevo"
+@using Microsoft.AspNetCore.Components
+@using Act17.Shared.Models
+@inject HttpClient http
+@inject NavigationManager navegar
+<h3>Nueva Venta</h3>
+<EditForm Model="laVenta" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+    <div class="mb-3">
+        <label for="nombre" class="form-label">Monto</label>
+        <InputNumber id="nombre" class="form-control" @bind-Value="laVenta.Monto" />
+        <ValidationMessage For="(()=>laVenta.Monto)" />
+    </div>
+    <div class="mb-3">
+        <label for="correo" class="form-label">Cantidad de productos</label>
+        <InputNumber class="form-control" id="correo" @bind-Value="laVenta.Cantidad" />
+        <ValidationMessage For="(()=>laVenta.Cantidad)" />
+    </div>
+    <div class="mb-3">
+        <label for="fecha" class="form-label">Fecha de venta</label>
+        <InputDate class="form-control" id="fecha" @bind-Value="laVenta.Fecha_venta" />
+        <ValidationMessage For="(()=>laVenta.Fecha_venta)" />
+    </div>
+    <div class="mb-3">
+        <label for="clienteid" class="form-label">Id del cliente</label>
+        <InputNumber class="form-control" id="clienteid" @bind-Value="laVenta.ClienteId" />
+        <ValidationMessage For="(()=>laVenta.ClienteId)" />
+    </div>
+    <div class="mb-3">
+        <label for="productos" class="form-label">Ids de los productos</label>
+        <InputNumber class="form-control" id="productos" @bind-Value="laVenta.ProductoIds" />
+    </div>
+
+
+    <button type="submit" class="btn btn-primary mx-2">Guardar</button>
+    <button type="button" class="btn btn-danger" @onclick="Cancelar">Cancelar</button>
+
+</EditForm>
+
+@code {
+    private Venta laVenta = new Venta();
+
+    private async Task Guardar()
+
+    {
+        await http.PostAsJsonAsync("api/ventas", laVenta);
+        navegar.NavigateTo("/ventas");
+    }
+    private void Cancelar()
+    {
+        navegar.NavigateTo("/ventas");
+    }
+}
