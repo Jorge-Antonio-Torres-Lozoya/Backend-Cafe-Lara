@@ -1,10 +1,11 @@
-﻿@page "/venta/nuevo"
-@using Microsoft.AspNetCore.Components
+﻿
+@page "/venta/modificar/{Id:int}"
 @using Act17.Shared.Models
 @inject HttpClient http
 @inject NavigationManager navegar
-<h3>Nueva Venta</h3>
-<EditForm Model="laVenta" OnValidSubmit="Guardar">
+
+<h3>Modificar venta</h3>
+<EditForm Model="laVenta" OnValidSubmit="Modificar">
     <DataAnnotationsValidator />
     <div class="mb-3">
         <label for="nombre" class="form-label">Monto</label>
@@ -26,9 +27,9 @@
         <InputNumber class="form-control" id="clienteid" @bind-Value="laVenta.ClienteId" />
         <ValidationMessage For="(()=>laVenta.ClienteId)" />
     </div>
-@*<div class="mb-3">
-        <label for="productos" class="form-label">Ids de los productos</label>
-        <InputNumber class="form-control" id="productos" @bind-Value="laVenta.ProductoIds" />
+    @*<div class="mb-3">
+    <label for="productos" class="form-label">Ids de los productos</label>
+    <InputNumber class="form-control" id="productos" @bind-Value="laVenta.ProductoIds" />
     </div>
     *@
     <div class="mb-3">
@@ -42,13 +43,18 @@
 </EditForm>
 
 @code {
+    [Parameter]
+    public int Id { get; set; }
     private Venta laVenta = new Venta();
     private string ProductosString { get; set; }
 
-    private async Task Guardar()
+    protected override async Task OnInitializedAsync()
+    {
+        laVenta = await http.GetFromJsonAsync<Venta>($"api/ventas/{Id}");
+    }
+    private async void Modificar()
 
     {
-        // Convertir la cadena de texto en una lista de enteros
         if (!string.IsNullOrEmpty(ProductosString))
         {
             laVenta.ProductoIds = ProductosString.Replace(" ", "")
@@ -57,7 +63,7 @@
                 .ToList();
         }
 
-        await http.PostAsJsonAsync("api/ventas", laVenta);
+        await http.PutAsJsonAsync($"api/ventas/{Id}", laVenta);
         navegar.NavigateTo("/ventas");
     }
     private void Cancelar()

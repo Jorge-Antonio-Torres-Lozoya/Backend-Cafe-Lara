@@ -60,6 +60,34 @@ namespace Act17.Server.Controllers
 
         // PUT: api/Ventas/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        /* [HttpPut("{id}")]
+          public async Task<IActionResult> PutVenta(int id, Venta venta)
+          {
+              if (id != venta.VentaId)
+              {
+                  return BadRequest();
+              }
+
+              _context.Entry(venta).State = EntityState.Modified;
+
+              try
+              {
+                  await _context.SaveChangesAsync();
+              }
+              catch (DbUpdateConcurrencyException)
+              {
+                  if (!VentaExists(id))
+                  {
+                      return NotFound();
+                  }
+                  else
+                  {
+                      throw;
+                  }
+              }
+
+              return NoContent();
+          } */
         [HttpPut("{id}")]
         public async Task<IActionResult> PutVenta(int id, Venta venta)
         {
@@ -68,7 +96,39 @@ namespace Act17.Server.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(venta).State = EntityState.Modified;
+            var ventaExistente = await _context.Ventas
+                .Include(v => v.Productos)
+                .FirstOrDefaultAsync(v => v.VentaId == id);
+
+            if (ventaExistente == null)
+            {
+                return NotFound();
+            }
+
+            // Actualizar los campos de la venta existente con los valores de la venta actualizada
+            ventaExistente.Monto = venta.Monto;
+            ventaExistente.Cantidad = venta.Cantidad;
+            ventaExistente.Fecha_venta = venta.Fecha_venta;
+            ventaExistente.ClienteId = venta.ClienteId;
+
+            // Actualizar la relación con los productos
+            if (venta.ProductoIds != null && venta.ProductoIds.Any())
+            {
+                ventaExistente.Productos.Clear();
+
+                foreach (var productoId in venta.ProductoIds)
+                {
+                    var producto = await _context.Productos.FindAsync(productoId);
+                    if (producto != null)
+                    {
+                        ventaExistente.Productos.Add(producto);
+                    }
+                }
+            }
+            else
+            {
+                ventaExistente.Productos.Clear();
+            }
 
             try
             {
@@ -88,7 +148,6 @@ namespace Act17.Server.Controllers
 
             return NoContent();
         }
-
         // POST: api/Ventas
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
