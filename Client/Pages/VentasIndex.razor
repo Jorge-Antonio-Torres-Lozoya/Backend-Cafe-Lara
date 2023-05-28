@@ -17,7 +17,7 @@ else
             <tr>
                 <th class="text-center">Id</th>
                 <th class="text-center">Monto</th>
-                <th class="text-center">Cantidad</th>
+                <th class="text-center">Cantidad de productos</th>
                 <th class="text-center">Fecha de venta</th>
                 <th class="text-center">Cliente_Id</th>
                 <th class="text-center">Productos</th>
@@ -39,10 +39,11 @@ else
                     <td class="text-center">@venta.ClienteId</td>
                 
                  
-                        @foreach (var pedido in venta.Productos)
-                        {
-                            <td>@pedido.Nombre_producto</td>
-                        }
+
+                    @{
+                        var nombresProductos = string.Join(", ", venta.Productos.Select(pedido => pedido.Nombre_producto));
+                    }
+                    <td class=" px-1">@nombresProductos</td>
                     
 
                     <td class="text-center">

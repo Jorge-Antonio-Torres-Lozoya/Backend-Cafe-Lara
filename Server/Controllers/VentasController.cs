@@ -60,34 +60,7 @@ namespace Act17.Server.Controllers
 
         // PUT: api/Ventas/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        /* [HttpPut("{id}")]
-          public async Task<IActionResult> PutVenta(int id, Venta venta)
-          {
-              if (id != venta.VentaId)
-              {
-                  return BadRequest();
-              }
-
-              _context.Entry(venta).State = EntityState.Modified;
-
-              try
-              {
-                  await _context.SaveChangesAsync();
-              }
-              catch (DbUpdateConcurrencyException)
-              {
-                  if (!VentaExists(id))
-                  {
-                      return NotFound();
-                  }
-                  else
-                  {
-                      throw;
-                  }
-              }
-
-              return NoContent();
-          } */
+        
         [HttpPut("{id}")]
         public async Task<IActionResult> PutVenta(int id, Venta venta)
         {
@@ -162,6 +135,7 @@ namespace Act17.Server.Controllers
                     var producto = await _context.Productos.FindAsync(productoId);
                     if (producto != null)
                     {
+                        producto.Stock -= venta.Cantidad;
                         venta.Productos.Add(producto);
                     }
                 }

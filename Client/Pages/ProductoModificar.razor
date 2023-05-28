@@ -1,0 +1,55 @@
+﻿@page "/producto/modificar/{Id:int}"
+@using Act17.Shared.Models
+@inject HttpClient http
+@inject NavigationManager navegar
+
+<h3>Modificar Producto</h3>
+
+
+<EditForm Model="elProducto" OnValidSubmit="Modificar">
+    <DataAnnotationsValidator />
+
+    <div class="mb-3">
+        <label for="nombre" class="form-label">Nombre</label>
+        <InputText id="nombre" class="form-control" @bind-Value="elProducto.Nombre_producto" />
+        <ValidationMessage For="(()=>elProducto.Nombre_producto)" />
+    </div>
+    <div class="mb-3">
+        <label for="correo" class="form-label">Precio</label>
+        <InputNumber class="form-control" id="correo" @bind-Value="elProducto.Precio" />
+        <ValidationMessage For="(()=>elProducto.Precio)" />
+    </div>
+    <div class="mb-3">
+        <label for="telefono" class="form-label">Stock</label>
+        <InputNumber class="form-control" id="telefono" @bind-Value="elProducto.Stock" />
+        <ValidationMessage For="(()=>elProducto.Stock)" />
+    </div>
+    <div class="mb-3">
+        <label for="telefono" class="form-label">Fecha de elaboracíón</label>
+        <InputDate class="form-control" id="telefono" @bind-Value="elProducto.Fecha_elaboracion" />
+        <ValidationMessage For="(()=>elProducto.Fecha_elaboracion)" />
+    </div>
+    <button type="submit" class="btn btn-primary mx-2">Guardar</button>
+    <button type="button" class="btn btn-danger" @onclick="Cancelar">Cancelar</button>
+
+</EditForm>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    private Producto elProducto = new Producto();
+    protected override async Task OnInitializedAsync()
+    {
+        elProducto = await http.GetFromJsonAsync<Producto>($"api/productoes/{Id}");
+    }
+    private async void Modificar()
+
+    {
+        await http.PutAsJsonAsync($"api/productoes/{Id}", elProducto);
+        navegar.NavigateTo("/productos");
+    }
+    private void Cancelar()
+    {
+        navegar.NavigateTo("/productos");
+    }
+}

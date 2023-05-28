@@ -6,14 +6,10 @@
 <h3>Nueva Venta</h3>
 <EditForm Model="laVenta" OnValidSubmit="Guardar">
     <DataAnnotationsValidator />
-    <div class="mb-3">
-        <label for="nombre" class="form-label">Monto</label>
-        <InputNumber id="nombre" class="form-control" @bind-Value="laVenta.Monto" />
-        <ValidationMessage For="(()=>laVenta.Monto)" />
-    </div>
+  
     <div class="mb-3">
         <label for="correo" class="form-label">Cantidad de productos</label>
-        <InputNumber class="form-control" id="correo" @bind-Value="laVenta.Cantidad" />
+        <InputNumber class="form-control" id="correo" @bind-Value="laVenta.Cantidad"  />
         <ValidationMessage For="(()=>laVenta.Cantidad)" />
     </div>
     <div class="mb-3">
@@ -26,11 +22,7 @@
         <InputNumber class="form-control" id="clienteid" @bind-Value="laVenta.ClienteId" />
         <ValidationMessage For="(()=>laVenta.ClienteId)" />
     </div>
-@*<div class="mb-3">
-        <label for="productos" class="form-label">Ids de los productos</label>
-        <InputNumber class="form-control" id="productos" @bind-Value="laVenta.ProductoIds" />
-    </div>
-    *@
+
     <div class="mb-3">
         <label for="productos" class="form-label">Ids de los productos</label>
         <InputText class="form-control" id="productos" @bind-Value="ProductosString" />
@@ -46,7 +38,6 @@
     private string ProductosString { get; set; }
 
     private async Task Guardar()
-
     {
         // Convertir la cadena de texto en una lista de enteros
         if (!string.IsNullOrEmpty(ProductosString))
@@ -55,13 +46,28 @@
                 .Split(',')
                 .Select(id => int.Parse(id.Trim()))
                 .ToList();
+
+            // Obtener los productos seleccionados desde la base de datos
+            var productos = await http.GetFromJsonAsync<List<Producto>>("api/productoes");
+            laVenta.Productos = productos.Where(p => laVenta.ProductoIds.Contains(p.ProductoId)).ToList();
+        }
+        // Calcular el monto total de la venta
+        if (laVenta.Productos != null && laVenta.Productos.Any())
+        {
+            int montoTotal = laVenta.Productos.Sum(p => p.Precio ?? 0);
+            laVenta.Monto = montoTotal * laVenta.Cantidad;
         }
 
         await http.PostAsJsonAsync("api/ventas", laVenta);
         navegar.NavigateTo("/ventas");
     }
+   
+
+
     private void Cancelar()
     {
         navegar.NavigateTo("/ventas");
     }
+
+   
 }
